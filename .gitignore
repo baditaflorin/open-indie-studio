@@ -1,0 +1,46 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Node
+node_modules/
+.npm/
+.pnpm-store/
+coverage/
+playwright-report/
+test-results/
+
+# Go
+bin/
+*.test
+*.out
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Runtime artifacts
+tmp/
+*.log
+dist/
+dist-data/
+
+# Keep GitHub Pages output under docs/ committed.
+
