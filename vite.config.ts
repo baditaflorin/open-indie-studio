@@ -15,6 +15,13 @@ function readGitValue(command: string, fallback: string): string {
   }
 }
 
+const headCommit = readGitValue('git rev-parse --short HEAD', 'dev');
+const sourceCommit =
+  process.env.VITE_GIT_COMMIT ??
+  readGitValue("git log -1 --format=%h -- . ':(exclude)docs'", headCommit);
+const gitBranch =
+  process.env.VITE_GIT_BRANCH ?? readGitValue('git rev-parse --abbrev-ref HEAD', 'local');
+
 export default defineConfig({
   base: process.env.PAGES_BASE ?? `/${repoName}/`,
   plugins: [
@@ -49,8 +56,8 @@ export default defineConfig({
   ],
   define: {
     __APP_VERSION__: JSON.stringify(packageJson.version),
-    __GIT_COMMIT__: JSON.stringify(readGitValue('git rev-parse --short HEAD', 'dev')),
-    __GIT_BRANCH__: JSON.stringify(readGitValue('git rev-parse --abbrev-ref HEAD', 'local')),
+    __GIT_COMMIT__: JSON.stringify(sourceCommit),
+    __GIT_BRANCH__: JSON.stringify(gitBranch),
     __REPO_URL__: JSON.stringify('https://github.com/baditaflorin/open-indie-studio'),
     __PAYPAL_URL__: JSON.stringify('https://www.paypal.com/paypalme/florinbadita'),
   },

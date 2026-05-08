@@ -5,5 +5,9 @@ make test
 make build
 test -s docs/index.html
 grep -q '<div id="root"></div>' docs/index.html
+if [[ -n "$(git status --porcelain -- docs)" ]]; then
+  echo "Pages build changed docs/. Commit the generated output before pushing."
+  git status --short -- docs
+  exit 1
+fi
 make smoke
-
