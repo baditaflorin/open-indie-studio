@@ -60,6 +60,29 @@ const labels: Record<SpriteKind, string> = {
   terrain: 'Platform',
 };
 
+// Text fields the UI lets people type into freely (no native maxLength
+// enforcement on every input, and programmatic callers have none at all).
+// StudioProjectSchema rejects anything over these limits, and storage.ts's
+// loadStoredProject() *silently* discards the whole project - falling back
+// to a fresh starter project - the moment a saved project fails schema
+// validation. Without clamping here, simply typing a long project name was
+// enough to make the app permanently and silently wipe the user's work on
+// next reload. Clamp at the point of mutation so state committed through
+// these setters can never drift outside what the schema (and therefore
+// persistence) accepts.
+const TEXT_FIELD_LIMITS = {
+  name: 80,
+  description: 220,
+  notes: 2_000,
+  sceneName: 80,
+  sceneGoal: 160,
+  rootNote: 8,
+} as const;
+
+function clampText(value: string, max: number): string {
+  return value.length > max ? value.slice(0, max) : value;
+}
+
 function createId(prefix: string): string {
   if ('crypto' in globalThis && 'randomUUID' in globalThis.crypto) {
     return `${prefix}_${globalThis.crypto.randomUUID()}`;
@@ -162,15 +185,19 @@ export function removeSprite(project: StudioProject, spriteId: string): StudioPr
 export function setProjectField<
   K extends keyof Pick<StudioProject, 'name' | 'description' | 'notes'>,
 >(project: StudioProject, field: K, value: StudioProject[K]): StudioProject {
-  return touchProject({ ...project, [field]: value });
+  const clamped = typeof value === 'string' ? clampText(value, TEXT_FIELD_LIMITS[field]) : value;
+  return touchProject({ ...project, [field]: clamped });
 }
 
 export function setSceneField<
   K extends keyof Pick<StudioProject['scene'], 'name' | 'goal' | 'background'>,
 >(project: StudioProject, field: K, value: StudioProject['scene'][K]): StudioProject {
+  const limit = field === 'name' ? TEXT_FIELD_LIMITS.sceneName : TEXT_FIELD_LIMITS.sceneGoal;
+  const clamped =
+    typeof value === 'string' && field !== 'background' ? clampText(value, limit) : value;
   return touchProject({
     ...project,
-    scene: { ...project.scene, [field]: value },
+    scene: { ...project.scene, [field]: clamped },
   });
 }
 
@@ -179,9 +206,13 @@ export function setAudioField<K extends keyof StudioProject['audio']>(
   field: K,
   value: StudioProject['audio'][K],
 ): StudioProject {
+  const clamped =
+    field === 'rootNote' && typeof value === 'string'
+      ? clampText(value, TEXT_FIELD_LIMITS.rootNote)
+      : value;
   return touchProject({
     ...project,
-    audio: { ...project.audio, [field]: value },
+    audio: { ...project.audio, [field]: clamped },
   });
 }
 
