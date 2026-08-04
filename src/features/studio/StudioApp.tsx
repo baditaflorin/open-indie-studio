@@ -193,6 +193,7 @@ export function StudioApp() {
               <input
                 className="mt-1 w-full rounded-md border border-[#1830332e] bg-white px-3 py-2"
                 value={project.name}
+                maxLength={80}
                 onChange={(event) =>
                   setProject((current) => setProjectField(current, 'name', event.target.value))
                 }
@@ -203,6 +204,7 @@ export function StudioApp() {
               <textarea
                 className="mt-1 min-h-24 w-full resize-y rounded-md border border-[#1830332e] bg-white px-3 py-2"
                 value={project.description}
+                maxLength={220}
                 onChange={(event) =>
                   setProject((current) =>
                     setProjectField(current, 'description', event.target.value),
@@ -346,6 +348,7 @@ export function StudioApp() {
                 <input
                   className="mt-1 w-full rounded-md border border-[#1830332e] bg-white px-3 py-2"
                   value={project.scene.name}
+                  maxLength={80}
                   onChange={(event) =>
                     setProject((current) => setSceneField(current, 'name', event.target.value))
                   }
@@ -356,6 +359,7 @@ export function StudioApp() {
                 <input
                   className="mt-1 w-full rounded-md border border-[#1830332e] bg-white px-3 py-2"
                   value={project.scene.goal}
+                  maxLength={160}
                   onChange={(event) =>
                     setProject((current) => setSceneField(current, 'goal', event.target.value))
                   }
@@ -410,6 +414,7 @@ export function StudioApp() {
               <input
                 className="mt-1 w-full rounded-md border border-[#1830332e] bg-white px-3 py-2"
                 value={project.audio.rootNote}
+                maxLength={8}
                 onChange={(event) =>
                   setProject((current) => setAudioField(current, 'rootNote', event.target.value))
                 }
